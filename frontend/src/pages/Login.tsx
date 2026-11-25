@@ -6,6 +6,7 @@ import { api } from '../lib/api';
 import { supabase } from '../lib/supabase';
 import { BRAND } from '../lib/brand';
 import { Logo, Spinner } from '../components/ui';
+import { useMeta } from '../lib/meta';
 
 function AuthFrame({ children }: { children: React.ReactNode }) {
   return (
@@ -28,6 +29,7 @@ export function Login() {
   const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const meta = useMeta().data;
   if (session) return <Navigate to={from} replace />;
 
   async function submit(e: FormEvent) {
@@ -57,6 +59,11 @@ export function Login() {
         {err && <div className="alert" role="alert">{err}</div>}
         <button className="btn primary full" disabled={busy}>{busy ? <><Spinner label="Signing in" /> Signing in…</> : <>Sign In <ArrowRight size={16} /></>}</button>
       </form>
+      {meta?.demo && meta.demoAccounts && (
+        <aside className="demo-box" aria-label="Demo accounts"><b>DEMO MODE: sample data only</b>
+          <p>Student: <button type="button" className="link" onClick={() => { setId(meta.demoAccounts!.student.roll); setPw(meta.demoAccounts!.student.password); }}>use demo student</button> <code>{meta.demoAccounts.student.roll}</code></p>
+          <p>Admin: <button type="button" className="link" onClick={() => { setId(meta.demoAccounts!.admin.email); setPw(meta.demoAccounts!.admin.password); }}>use demo admin</button> <code>{meta.demoAccounts.admin.email}</code></p>
+        </aside>)}
     </AuthFrame>
   );
 }

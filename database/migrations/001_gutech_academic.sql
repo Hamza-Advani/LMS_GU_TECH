@@ -82,3 +82,6 @@ begin
 end $$;
 drop trigger if exists protect_profile_columns on public.profiles;
 create trigger protect_profile_columns before update on public.profiles for each row execute function public.protect_profile_columns();
+
+-- weighted assessments (demo grading uses weightage when every item has one)
+alter table public.marks add column if not exists weightage numeric(5,2) check (weightage is null or (weightage > 0 and weightage <= 100));

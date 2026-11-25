@@ -1,0 +1,18 @@
+import { chromium } from 'playwright-core'; import fs from 'node:fs';
+const LOG = process.argv[2]; const b = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true });
+const p = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+const ok = (n, v) => console.log(`${v ? 'PASS' : 'FAIL'}  ${n}`);
+await p.goto('http://localhost:5173/login'); await p.getByRole('link', { name: 'Forgot password?' }).click();
+await p.getByRole('textbox').fill('DEMO-2024-008'); await p.getByRole('button', { name: 'Send reset link' }).click();
+await p.getByText(/If that account exists/).waitFor(); ok('Forgot password shows generic confirmation', true);
+await new Promise(r => setTimeout(r, 500));
+const link = [...fs.readFileSync(LOG, 'utf8').matchAll(/password reset link for demo\.student8@demo\.gutech\.local: (\S+)/g)].pop()?.[1];
+ok('Reset link was generated for the registered email', !!link);
+await p.goto(link); await p.getByLabel('New password').waitFor({ timeout: 8000 }); ok('Reset link opens the new-password form', true);
+await p.getByLabel('New password').fill('short'); await p.getByLabel('Confirm password').fill('short'); await p.getByRole('button', { name: 'Update password' }).click();
+ok('Short password rejected', await p.getByRole('alert').getByText(/at least 12/).isVisible());
+await p.getByLabel('New password').fill('BrandNew#Password9'); await p.getByLabel('Confirm password').fill('BrandNew#Password9'); await p.getByRole('button', { name: 'Update password' }).click();
+await p.getByText(/Password updated/).waitFor({ timeout: 8000 }); ok('Password updated', true);
+const r = (pw) => fetch('http://localhost:4000/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ identifier: 'DEMO-2024-008', password: pw }) }).then(x => x.status);
+ok('New password logs in', await r('BrandNew#Password9') === 200); ok('Old password no longer works', await r('DemoStudent#2024') === 401);
+await b.close();

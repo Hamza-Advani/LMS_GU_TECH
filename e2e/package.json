@@ -1,0 +1,1 @@
+{"name":"gutech-lms-e2e","private":true,"type":"module","scripts":{"test":"node --test api.test.mjs","test:ui":"node ui.test.mjs"},"devDependencies":{"playwright-core":"^1.49.0"}}

@@ -35,7 +35,7 @@ export function Assignments() {
               <div className="split"><div><span className="chip">{c?.code}</span><h3>{a.title}</h3></div>
                 {isStudent && <span className={`pill ${s ? 'present' : overdue ? 'absent' : 'late'}`}>{s ? (s.marks_awarded !== null ? 'Graded' : 'Submitted') : overdue ? 'Overdue' : 'Pending'}</span>}</div>
               {a.description && <p className="muted">{a.description}</p>}
-              <small>Due {fmtDate(a.due_at)} · {a.max_marks} marks{s?.marks_awarded != null ? ` · Scored ${s.marks_awarded}/${a.max_marks}` : ''}</small>
+              <small>Due {fmtDate(a.due_at)} · {a.max_marks} marks{s ? ` · Submitted ${fmtDate(s.submitted_at)}` : ''}{s?.marks_awarded != null ? ` · Scored ${s.marks_awarded}/${a.max_marks}` : ''}</small>
               {s?.feedback && <p className="note">Feedback: {s.feedback}</p>}
               {isStudent && !s && openId !== a.id && <div><button className="btn sm" onClick={() => { setOpenId(a.id); setErr(''); }}>Submit work</button></div>}
               {openId === a.id && (

@@ -1,0 +1,322 @@
+{
+ "run": "2026-11-25T17:26:21.883Z",
+ "passed": 63,
+ "total": 63,
+ "results": [
+  {
+   "name": "Login page loads with GU Tech branding + Student Portal",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Demo accounts hint visible in demo mode",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Empty login shows validation error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Invalid credentials: generic error, stays on login",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Password visibility toggle",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student login -> dashboard",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Dashboard shows roll number, program, department, semester",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Dashboard credit hours 14 and courses 5 from DB",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Dashboard has attendance %, announcements, upcoming assignments, activity",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Dashboard next class / today panel present",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Dashboard: no horizontal overflow @390",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Attendance card opens attendance page",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Courses card opens courses page",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Session persists after refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Courses list: 5 sample courses incl. required names",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Course cards show credit hours + instructor",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Course detail: code, title, credits, instructor",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Course detail: attendance %, result + grade, marks table, schedule, materials, assignments",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Material download delivers the file (signed link)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Timetable weekly: all weekday headings, instructor + room shown",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Timetable shows weekend free-day state",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Timetable daily view: free-day state",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Attendance: overall %, course-wise cards, history table",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Results: GPA, per-course %, grade, weights, marks",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Assignments: list, due dates, statuses (Graded / Submitted / Pending)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Empty submission is rejected with a message",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Submission persists after refresh with status + date",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Notifications: announcements + upcoming deadlines",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Mark-as-read reduces unread count",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student redirected away from /manage",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student nav has no Manage link",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Logout works and protected route redirects to login",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin login -> dashboard with management shortcut",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin sees all 8 management sections",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Course form validates required fields",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin creates course -> listed",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Duplicate course code rejected with message",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Created course persists after refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin edits course (credit hours + instructor)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin enrolls demo student in new course",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Timetable: end before start rejected",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin creates timetable entry",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin updates attendance",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Marks: obtained > maximum rejected",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin adds marks",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin creates assignment",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin publishes announcement",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin uploads course material",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT sees admin-created course",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT sees course detail: instructor, credits, timetable slot, material, assignment",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT timetable shows new slot",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT attendance history shows the absence the admin recorded",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT results show marks the admin added (20/50)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT sees new assignment as Pending",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT sees announcement (unread)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "STUDENT dashboard reflects change: announcement + assignment + 17 credit hours",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Responsive mobile (390px): student routes have no horizontal overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Responsive mobile (390px): admin sections have no horizontal overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Responsive tablet (820px): student routes have no horizontal overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Responsive tablet (820px): admin sections have no horizontal overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Responsive desktop (1366px): student routes have no horizontal overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Responsive desktop (1366px): admin sections have no horizontal overflow",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Browser console: no unexpected errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

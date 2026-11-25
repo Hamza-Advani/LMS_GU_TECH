@@ -15,6 +15,7 @@ import { Results } from './pages/Results';
 import { Assignments } from './pages/Assignments';
 import { Notices, type Notifications } from './pages/Notices';
 import { Admin } from './pages/admin/Admin';
+import { useMeta } from './lib/meta';
 
 function Splash({ text = 'Loading your portal' }: { text?: string }) {
   return <div className="splash" role="status"><Logo size={72} /><Spinner label={text} /><span>{text}…</span></div>;
@@ -47,6 +48,7 @@ function Shell() {
   const [open, setOpen] = useState(false);
   const notes = useQuery({ queryKey: ['notifications'], queryFn: () => api<Notifications>('/notifications'), retry: 0 });
   const unread = notes.data?.announcements.filter(a => !a.read).length ?? 0;
+  const meta = useMeta().data;
   const items = NAV.filter(n => !n.roles || (profile && n.roles.includes(profile.role)));
   return (
     <div className="shell">
@@ -61,6 +63,7 @@ function Shell() {
       </aside>
       {open && <button className="scrim" aria-label="Close menu" onClick={() => setOpen(false)} />}
       <div className="main">
+        {meta?.demo && <div className="demo-banner" role="note">DEMO MODE: sample data on a local demo database, not the production Supabase</div>}
         <header className="topbar"><button className="icon-btn" onClick={() => setOpen(true)} aria-label="Open menu"><Menu size={22} /></button><div className="top-brand"><Logo size={30} /><b>{BRAND.short}</b></div>
           <NavLink to="/notifications" className="icon-btn bell" aria-label={`Notifications${unread ? `, ${unread} unread` : ''}`}><Bell size={20} />{unread > 0 && <i className="badge">{unread}</i>}</NavLink></header>
         <main className="content">
