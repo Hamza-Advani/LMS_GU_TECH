@@ -5,3 +5,7 @@ dist
 !.env.example
 
 .demo-data/
+.vercel
+
+.vercel
+.env*

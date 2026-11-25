@@ -25,7 +25,7 @@ export class Store {
     if (!this.data.tables.profiles.length) this.seed();
   }
   private file: string;
-  private empty(): Data { return { secret: randomBytes(32).toString('hex'), tables: {}, auth: [], refresh: {} }; }
+  private empty(): Data { return { secret: process.env.DEMO_JWT_SECRET || randomBytes(32).toString('hex'), tables: {}, auth: [], refresh: {} }; }
   save() { if (this.timer) return; this.timer = setTimeout(() => { this.timer = null; fs.writeFileSync(this.file, JSON.stringify(this.data)); }, 150); }
   flush() { if (this.timer) { clearTimeout(this.timer); this.timer = null; } fs.writeFileSync(this.file, JSON.stringify(this.data)); }
 
@@ -61,13 +61,13 @@ export class Store {
     try { const p = JSON.parse(Buffer.from(b, 'base64url').toString()); return p.exp > Date.now() / 1000 ? p : null; } catch { return null; }
   }
   session(u: AuthUser) {
-    const access_token = this.signJwt({ sub: u.id, email: u.email }), refresh_token = randomBytes(24).toString('hex');
-    this.data.refresh[refresh_token] = u.id; this.save();
+    // Refresh tokens are signed and stateless so any serverless instance can honour them.
+    const access_token = this.signJwt({ sub: u.id, email: u.email }), refresh_token = this.signJwt({ sub: u.id, typ: 'refresh', recovery_only: true }, 7 * 86400);
     return { access_token, refresh_token, token_type: 'bearer', expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600, user: { id: u.id, email: u.email, aud: 'authenticated', role: 'authenticated' } };
   }
   signIn(email: string, password: string) { const u = this.data.auth.find(a => a.email.toLowerCase() === email.toLowerCase()); return u && checkPw(password, u.hash) ? this.session(u) : null; }
   userFromToken(token: string) { const p = this.verifyJwt(token); return p?.sub && !p.recovery_only ? this.data.auth.find(a => a.id === p.sub) ?? null : null; }
-  refreshSession(rt: string) { const id = this.data.refresh[rt]; const u = id && this.data.auth.find(a => a.id === id); if (!u) return null; delete this.data.refresh[rt]; return this.session(u); }
+  refreshSession(rt: string) { const p = this.verifyJwt(rt); const u = p?.typ === 'refresh' && this.data.auth.find(a => a.id === p.sub); return u ? this.session(u) : null; }
   setPassword(id: string, pw: string) { const u = this.data.auth.find(a => a.id === id); if (!u) return false; u.hash = hashPw(pw); this.save(); return true; }
   createUser(email: string, password: string, meta: Record<string, unknown>) {
     if (this.data.auth.some(a => a.email.toLowerCase() === email.toLowerCase())) return null;

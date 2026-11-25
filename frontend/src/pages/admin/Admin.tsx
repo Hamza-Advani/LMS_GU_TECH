@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pencil, Trash2 } from 'lucide-react';
 import { api } from '../../lib/api';
@@ -17,7 +17,6 @@ function RecordForm({ title, fields, initial, submitLabel, onSubmit, onCancel }:
   const [v, setV] = useState<Values>(initial ?? {});
   const [files, setFiles] = useState<Record<string, File | undefined>>({});
   const [err, setErr] = useState(''); const [ok, setOk] = useState(''); const [busy, setBusy] = useState(false);
-  useEffect(() => { setV(initial ?? {}); setErr(''); setOk(''); }, [initial]);
   const shown = fields.filter(f => !(editing && f.only === 'create'));
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setOk('');
@@ -136,21 +135,23 @@ function AttendanceSheet({ cid, roster }: { cid: string; roster: RosterRow[] }) 
   const qc = useQueryClient();
   const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(today);
-  const [st, setSt] = useState<Record<string, string>>({});
+  const [edits, setEdits] = useState<Record<string, string>>({}); // statuses the user changed on screen
   const [msg, setMsg] = useState(''); const [err, setErr] = useState('');
   const existing = useQuery({ queryKey: ['sheet', cid, date], queryFn: () => api<{ student_id: string; status: string }[]>(`/attendance/sheet?course_id=${cid}&date=${date}`), enabled: !!date });
-  useEffect(() => { setSt(Object.fromEntries((existing.data ?? []).map(r => [r.student_id, r.status]))); }, [existing.data]);
+  // Shown status = user edit, else the saved record for that date, else "present". Derived, so no effect/race.
+  const saved = Object.fromEntries((existing.data ?? []).map(r => [r.student_id, r.status]));
+  const statusOf = (id: string) => edits[id] ?? saved[id] ?? 'present';
   const m = useMutation({
-    mutationFn: () => api<{ saved: number }>('/attendance', { method: 'POST', body: JSON.stringify({ course_id: cid, attended_on: date, records: roster.map(r => ({ student_id: r.student_id, status: st[r.student_id] || 'present' })) }) }),
-    onSuccess: r => { setErr(''); setMsg(`Saved ${r.saved} records for ${date}.`); qc.invalidateQueries({ queryKey: ['sheet', cid, date] }); qc.invalidateQueries({ queryKey: ['attendance'] }); qc.invalidateQueries({ queryKey: ['dashboard'] }); },
+    mutationFn: () => api<{ saved: number }>('/attendance', { method: 'POST', body: JSON.stringify({ course_id: cid, attended_on: date, records: roster.map(r => ({ student_id: r.student_id, status: statusOf(r.student_id) })) }) }),
+    onSuccess: r => { setErr(''); setEdits({}); setMsg(`Saved ${r.saved} records for ${date}.`); qc.invalidateQueries({ queryKey: ['sheet', cid, date] }); qc.invalidateQueries({ queryKey: ['attendance'] }); qc.invalidateQueries({ queryKey: ['dashboard'] }); },
     onError: e => { setMsg(''); setErr(e instanceof Error ? e.message : 'Could not save.'); },
   });
   return (
     <section className="card"><h3>Mark attendance</h3>
-      <label>Date<input type="date" value={date} max={today} onChange={e => { setDate(e.target.value); setMsg(''); setErr(''); }} aria-label="Attendance date" /></label>
+      <label>Date<input type="date" value={date} max={today} onChange={e => { setDate(e.target.value); setEdits({}); setMsg(''); setErr(''); }} aria-label="Attendance date" /></label>
       {existing.data && existing.data.length > 0 && <p className="muted">Editing {existing.data.length} existing records for this date.</p>}
       <div className="table-wrap"><table><thead><tr><th>Roll no.</th><th>Student</th><th>Status</th></tr></thead><tbody>{roster.map(r => { const p = prof(r); return (
-        <tr key={r.student_id}><td>{p?.roll_number || '—'}</td><td>{p?.full_name}</td><td><select disabled={existing.isFetching} aria-label={`Status for ${p?.full_name}`} value={st[r.student_id] || 'present'} onChange={e => setSt({ ...st, [r.student_id]: e.target.value })}>{['present', 'absent', 'late', 'leave'].map(s => <option key={s}>{s}</option>)}</select></td></tr>); })}</tbody></table></div>
+        <tr key={r.student_id}><td>{p?.roll_number || '—'}</td><td>{p?.full_name}</td><td><select disabled={existing.isFetching} aria-label={`Status for ${p?.full_name}`} value={statusOf(r.student_id)} onChange={e => setEdits({ ...edits, [r.student_id]: e.target.value })}>{['present', 'absent', 'late', 'leave'].map(s => <option key={s}>{s}</option>)}</select></td></tr>); })}</tbody></table></div>
       {err && <div className="alert" role="alert">{err}</div>}{msg && <div className="success" role="status">{msg}</div>}
       <div className="actions"><button className="btn primary" disabled={m.isPending || !date || existing.isFetching} onClick={() => m.mutate()}>{m.isPending ? <Spinner /> : 'Save attendance'}</button></div>
     </section>

@@ -18,8 +18,8 @@ export async function api<T>(path: string, init: RequestInit = {}, opts: { auth?
     }
     return res.status === 204 ? (undefined as T) : res.json();
   } catch (e) {
-    if (e instanceof DOMException && e.name === 'AbortError') throw new Error('The server took too long to respond. Please try again.');
-    if (e instanceof TypeError) throw new Error('Cannot reach the server. Check your connection and try again.');
+    if (e instanceof DOMException && e.name === 'AbortError') throw new Error('The server took too long to respond. Please try again.', { cause: e });
+    if (e instanceof TypeError) throw new Error('Cannot reach the server. Check your connection and try again.', { cause: e });
     throw e;
   } finally {
     clearTimeout(timer);

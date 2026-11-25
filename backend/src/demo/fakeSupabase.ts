@@ -83,7 +83,9 @@ class Policy {
 }
 
 // ---------- select-list parsing ----------
-type Sel = { star: boolean; cols: string[]; embeds: { name: string; inner: Sel; count: boolean }[] };
+type Sel = { star: boolean; cols: string[]; embeds: { name: string; inner: Sel; count: boolean; hinted: boolean }[] };
+// Tables with more than one FK to profiles: real PostgREST rejects an un-hinted profiles(...) embed on these.
+const AMBIGUOUS_PROFILES = new Set(['marks', 'submissions', 'course_enrollments', 'complaints', 'attendance']);
 function parseSelect(s: string): Sel {
   const out: Sel = { star: false, cols: [], embeds: [] };
   let depth = 0, cur = ''; const parts: string[] = [];
@@ -93,8 +95,8 @@ function parseSelect(s: string): Sel {
     const p = raw.trim(); if (!p) continue;
     const open = p.indexOf('(');
     if (open < 0) { if (p === '*') out.star = true; else out.cols.push(p); continue; }
-    const name = p.slice(0, open).trim(), inner = p.slice(open + 1, p.lastIndexOf(')')).trim();
-    out.embeds.push({ name, inner: parseSelect(inner), count: inner === 'count' });
+    const rawName = p.slice(0, open).trim(), name = rawName.split('!')[0], inner = p.slice(open + 1, p.lastIndexOf(')')).trim();
+    out.embeds.push({ name, inner: parseSelect(inner), count: inner === 'count', hinted: rawName.includes('!') });
   }
   return out;
 }
@@ -132,6 +134,7 @@ class Query implements PromiseLike<Result> {
       const rel = REL[this.table]?.[e.name] ?? Object.values(REL).map(r => r[e.name]).find(Boolean);
       const relMap = REL[this.table]?.[e.name];
       if (!relMap) { out[e.name] = null; continue; }
+      if (relMap.target === 'profiles' && !e.hinted && AMBIGUOUS_PROFILES.has(this.table)) throw new Error(`Could not embed because more than one relationship was found for '${this.table}' and 'profiles' (use profiles!<fk>)`);
       const sub = new Query(this.s, relMap.target, this.me); void rel;
       if (relMap.many) {
         const kids = this.s.data.tables[relMap.target].filter(k => k[relMap.fk] === row.id && pol.read(relMap.target, k));
@@ -209,7 +212,7 @@ class Query implements PromiseLike<Result> {
         const targets = visible();
         for (const r of targets) {
           if (this.op === 'update') {
-            let patch = { ...this.payload };
+            const patch = { ...this.payload };
             if (t === 'profiles' && this.me && this.me.role !== 'admin') { for (const k of ['role', 'roll_number', 'email', 'program', 'semester']) delete patch[k]; } // protect_profile_columns trigger
             const merged = { ...r, ...patch, updated_at: new Date().toISOString() };
             if (!pol.write(t, 'update', merged, r)) continue;

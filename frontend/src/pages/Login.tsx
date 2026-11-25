@@ -44,7 +44,7 @@ export function Login() {
     <AuthFrame>
       <span className="eyebrow">Student Portal</span>
       <h1>Welcome back</h1>
-      <p className="muted">Sign in with your roll number to see your courses, timetable and results.</p>
+      <p className="muted">Sign in with your roll number to see your courses, timetable and results. Staff can use their email address.</p>
       <form onSubmit={submit} noValidate>
         <label>Roll number
           <div className="field"><User size={16} /><input value={id} onChange={e => setId(e.target.value)} autoComplete="username" autoCapitalize="characters" placeholder="e.g. 2023-BSCS-001" aria-invalid={!!err} /></div>

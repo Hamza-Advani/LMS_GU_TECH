@@ -1,12 +1,12 @@
 import { useState, type ReactNode } from 'react';
 import { AlertTriangle, Inbox, RefreshCw } from 'lucide-react';
-import { BRAND } from '../lib/brand';
+import { BRAND, LOGO_URL } from '../lib/brand';
 
 export function Logo({ size = 40 }: { size?: number }) {
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState(!LOGO_URL);
   return failed
     ? <span className="logo-fallback" style={{ width: size, height: size, fontSize: size * 0.38 }} aria-label={BRAND.short}>GU</span>
-    : <img src={BRAND.logo} alt={`${BRAND.short} logo`} width={size} height={size} onError={() => setFailed(true)} className="logo-img" />;
+    : <img src={LOGO_URL ?? undefined} alt={`${BRAND.short} logo`} width={size} height={size} onError={() => setFailed(true)} className="logo-img" />;
 }
 export const Spinner = ({ label = 'Loading' }: { label?: string }) => <span className="spinner" role="status" aria-label={label} />;
 export const Skeleton = ({ h = 16, w = '100%', r = 8 }: { h?: number; w?: number | string; r?: number }) => <span className="skeleton" style={{ height: h, width: w, borderRadius: r }} aria-hidden />;

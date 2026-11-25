@@ -195,7 +195,7 @@ const markFields={assessment:z.string().trim().min(2).max(120),score:z.number().
 const notOver=(x:{score:number;max_score:number})=>x.score<=x.max_score;
 gutechRouter.get('/results/manage',authenticate,allowRoles('admin','teacher'),route(async(req,res)=>{
   const cid=idSchema.safeParse(req.query.course_id);if(!cid.success)return res.status(400).json({message:'Choose a course.'});
-  const {data,error}=await scopedDb(req).from('marks').select('id,student_id,assessment,score,max_score,weightage,feedback,created_at,profiles(full_name,roll_number)').eq('course_id',cid.data).order('created_at',{ascending:false}).limit(500);
+  const {data,error}=await scopedDb(req).from('marks').select('id,student_id,assessment,score,max_score,weightage,feedback,created_at,profiles!student_id(full_name,roll_number)').eq('course_id',cid.data).order('created_at',{ascending:false}).limit(500);
   if(error)return fail(res,error);res.json(data);
 }));
 gutechRouter.post('/results',authenticate,allowRoles('admin','teacher'),route(async(req,res)=>{

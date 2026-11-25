@@ -26,11 +26,11 @@ async function login(page, who) {
   await page.goto(BASE + '/login');
   await page.getByPlaceholder(/2023-BSCS|roll/i).fill(who.id); await page.getByPlaceholder('Enter your password').fill(who.pw);
   await page.getByRole('button', { name: 'Sign In' }).click();
-  await page.waitForSelector('main h1', { timeout: 10000 });
+  await page.waitForSelector('main.content h1', { timeout: 10000 });
   await page.waitForFunction(() => Object.keys(localStorage).some(k => k.includes('auth-token')), null, { timeout: 5000 }); // session persisted
 }
 const overflow = p => p.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
-const nav = async (page, path, sel = 'main h1') => { await page.goto(BASE + path); await page.waitForSelector(sel, { timeout: 10000 }); await page.waitForLoadState('networkidle').catch(() => {}); };
+const nav = async (page, path, sel = 'main.content h1') => { await page.goto(BASE + path); await page.waitForSelector(sel, { timeout: 10000 }); await page.waitForLoadState('networkidle').catch(() => {}); };
 const field = (page, form, name) => page.getByRole('form', { name: form }).locator(`[data-field="${name}"]`);
 const tab = (page, name) => page.getByRole('tab', { name, exact: true }).click();
 const settle = page => page.waitForLoadState('networkidle').catch(() => {});
@@ -40,7 +40,7 @@ const settle = page => page.waitForLoadState('networkidle').catch(() => {});
   const { ctx, page } = await open(390, 844);
   await page.goto(BASE + '/login');
   check('Login page loads with GU Tech branding + Student Portal', await page.getByText('Student Portal').isVisible() && await page.getByText('Ghazali University').isVisible());
-  check('Demo accounts hint visible in demo mode', await page.getByText(/DEMO MODE/).first().isVisible());
+  check('Demo accounts hint visible in demo mode', await page.getByText(/DEMO MODE: sample data only/).waitFor({ timeout: 5000 }).then(() => true).catch(() => false));
   await page.screenshot({ path: SHOTS + 'login-mobile.png' });
   await page.getByRole('button', { name: 'Sign In' }).click();
   check('Empty login shows validation error', await page.getByRole('alert').getByText('Enter your roll number and password.').isVisible());
@@ -50,8 +50,9 @@ const settle = page => page.waitForLoadState('networkidle').catch(() => {});
   await page.getByRole('button', { name: 'Show password' }).click();
   check('Password visibility toggle', await page.getByPlaceholder('Enter your password').getAttribute('type') === 'text');
   await page.getByPlaceholder('Enter your password').fill(STUDENT.pw); await page.getByRole('button', { name: 'Sign In' }).click();
-  await page.waitForSelector('main h1'); await settle(page);
-  check('Student login -> dashboard', /Good (morning|afternoon|evening), Demo/.test(await page.locator('main h1').innerText()));
+  await page.waitForSelector('main.content h1'); await settle(page);
+  await page.getByText('Total courses').waitFor({ timeout: 8000 }); await page.getByText(/Today.s schedule/).waitFor({ timeout: 8000 });
+  check('Student login -> dashboard', /Good (morning|afternoon|evening), Demo/.test(await page.locator('main.content h1').innerText()));
   const dash = await page.locator('main').innerText();
   check('Dashboard shows roll number, program, department, semester', ['DEMO-2024-001', 'BS Computer Science (DEMO)', 'School of Technology'].every(s => dash.includes(s)));
   check('Dashboard credit hours 14 and courses 5 from DB', /Total courses\s*5/i.test(dash.replace(/\n+/g, ' ')) && /Credit hours\s*14/i.test(dash.replace(/\n+/g, ' ')));
@@ -65,7 +66,7 @@ const settle = page => page.waitForLoadState('networkidle').catch(() => {});
   await page.goBack(); await page.getByRole('link', { name: /Total courses/ }).click(); await page.waitForURL('**/courses');
   check('Courses card opens courses page', true);
   // session persistence
-  await page.reload(); await page.waitForSelector('main h1');
+  await page.reload(); await page.waitForSelector('main.content h1');
   check('Session persists after refresh', !page.url().includes('/login'));
   await ctx.close();
 }
@@ -114,7 +115,7 @@ const settle = page => page.waitForLoadState('networkidle').catch(() => {});
   await card.getByRole('button', { name: 'Submit', exact: true }).click();
   check('Empty submission is rejected with a message', await card.getByRole('alert').isVisible());
   await card.locator('textarea').fill('SAMPLE answer submitted by the e2e test.'); await card.getByRole('button', { name: 'Submit', exact: true }).click();
-  await card.getByText('Submitted', { exact: false }).first().waitFor(); await page.reload(); await page.waitForSelector('main h1'); await settle(page);
+  await card.getByText('Submitted', { exact: false }).first().waitFor(); await page.reload(); await page.waitForSelector('main.content h1'); await settle(page);
   check('Submission persists after refresh with status + date', /Submitted/.test(await page.locator('section.card', { hasText: 'Assignment 2: Functions' }).innerText()));
   await nav(page, '/notifications'); await settle(page);
   const nt = await page.locator('main').innerText();

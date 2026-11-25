@@ -26,7 +26,7 @@ export function demoAuthRouter() {
   r.use(json());
   const bearer = (h?: string) => h?.match(/^Bearer\s+(.+)$/i)?.[1] ?? '';
   const userJson = (u: { id: string; email: string }) => ({ id: u.id, aud: 'authenticated', role: 'authenticated', email: u.email, app_metadata: {}, user_metadata: {} });
-  r.get('/user', (req, res) => { const u = s.userFromToken(bearer(req.headers.authorization)); u ? res.json(userJson(u)) : res.status(401).json({ msg: 'invalid JWT' }); });
+  r.get('/user', (req, res) => { const u = s.userFromToken(bearer(req.headers.authorization)); if (u) res.json(userJson(u)); else res.status(401).json({ msg: 'invalid JWT' }); });
   r.put('/user', (req, res) => {
     const u = s.userFromToken(bearer(req.headers.authorization)); if (!u) return res.status(401).json({ msg: 'invalid JWT' });
     const pw = req.body?.password; if (typeof pw !== 'string' || pw.length < 12) return res.status(422).json({ msg: 'Password should be at least 12 characters.' });
@@ -35,7 +35,7 @@ export function demoAuthRouter() {
   r.post('/logout', (req, res) => { res.status(204).end(); });
   r.post('/token', (req, res) => {
     if (req.query.grant_type !== 'refresh_token') return res.status(400).json({ error: 'unsupported_grant_type' });
-    const sess = s.refreshSession(String(req.body?.refresh_token ?? '')); sess ? res.json(sess) : res.status(400).json({ error: 'invalid_grant', error_description: 'Invalid Refresh Token' });
+    const sess = s.refreshSession(String(req.body?.refresh_token ?? '')); if (sess) res.json(sess); else res.status(400).json({ error: 'invalid_grant', error_description: 'Invalid Refresh Token' });
   });
   r.get('/settings', (_req, res) => res.json({ external: {}, disable_signup: true, mailer_autoconfirm: true }));
   return r;

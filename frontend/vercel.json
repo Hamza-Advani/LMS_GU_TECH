@@ -1,5 +1,11 @@
 {
-  "rewrites": [{ "source": "/((?!api/|brand/|assets/|robots.txt).*)", "destination": "/index.html" }],
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://gutech-lms-api-ecru.vercel.app/api/:path*" },
+    { "source": "/auth/v1/:path*", "destination": "https://gutech-lms-api-ecru.vercel.app/auth/v1/:path*" },
+    { "source": "/demo/files", "destination": "https://gutech-lms-api-ecru.vercel.app/demo/files" },
+    { "source": "/((?!brand/|assets/|robots.txt).*)", "destination": "/index.html" }
+  ],
   "headers": [
     { "source": "/(.*)", "headers": [
       { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" },

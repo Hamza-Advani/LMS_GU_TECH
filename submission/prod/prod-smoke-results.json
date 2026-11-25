@@ -1,0 +1,108 @@
+{
+ "run": "2026-11-25T18:07:59.347Z",
+ "app": "https://gutech-lms-xi.vercel.app",
+ "passed": 20,
+ "total": 20,
+ "results": [
+  {
+   "name": "Production login page loads (GU Tech branding)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Production shows DEMO MODE notice on login",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Empty login shows validation error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Invalid credentials: generic error",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Protected route redirects to login when signed out",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "After login the user returns to the page they originally asked for (/attendance)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student dashboard from production API: profile, 5 courses, 14 credit hours",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Dashboard no horizontal overflow (390px)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student /courses loads with data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student /timetable loads with data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student /attendance loads with data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student /results loads with data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student /assignments loads with data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student /notifications loads with data",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Student blocked from /manage",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Session persists after refresh",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Logout works",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin login + management console shows all 8 sections",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Admin students list loads from production API",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "Production browser console: no unexpected errors",
+   "ok": true,
+   "detail": ""
+  }
+ ]
+}

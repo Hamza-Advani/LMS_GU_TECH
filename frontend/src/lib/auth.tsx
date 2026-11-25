@@ -12,15 +12,16 @@ export const useAuth = () => useContext(Ctx);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [sessionLoading, setSessionLoading] = useState(true);
   const [profileError, setProfileError] = useState('');
 
   useEffect(() => {
     let alive = true;
     supabase.auth.getSession()
-      .then(({ data }) => { if (alive) { setSession(data.session); if (!data.session) setLoading(false); } })
-      .catch(() => alive && setLoading(false));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => { setSession(s); if (!s) { setProfile(null); setLoading(false); } });
+      .then(({ data }) => { if (alive) setSession(data.session); })
+      .catch(() => undefined)
+      .finally(() => { if (alive) setSessionLoading(false); });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => { setSession(s); setSessionLoading(false); if (!s) { setProfile(null); setProfileError(''); } });
     return () => { alive = false; subscription.unsubscribe(); };
   }, []);
 
@@ -28,10 +29,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!token) return;
     let alive = true;
-    setLoading(true); setProfileError('');
-    api<Profile>('/users/me').then(p => alive && setProfile(p)).catch(e => alive && setProfileError(e.message)).finally(() => alive && setLoading(false));
+    api<Profile>('/users/me').then(p => { if (alive) { setProfile(p); setProfileError(''); } }).catch(e => { if (alive) setProfileError(e.message); });
     return () => { alive = false; };
   }, [token]);
+  // Derived: loading until the session is known and, when signed in, until the profile (or an error) has arrived.
+  const loading = sessionLoading || (!!token && !profile && !profileError);
 
   const signIn = useCallback(async (identifier: string, password: string) => {
     const t = await api<{ access_token: string; refresh_token: string }>('/auth/login', { method: 'POST', body: JSON.stringify({ identifier, password }) }, { auth: false });
