@@ -1,0 +1,13 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import {env} from './config.js';
+import {apiRouter} from './routes/index.js';
+import {errorHandler,notFound} from './middleware/errors.js';
+const app=express();
+app.disable('x-powered-by');app.use(helmet());app.use(cors({origin:env.FRONTEND_ORIGIN,credentials:true}));app.use(express.json({limit:'1mb'}));
+app.use('/api',rateLimit({windowMs:60_000,limit:120,standardHeaders:'draft-7',legacyHeaders:false}));
+app.get('/health',(_req,res)=>res.json({status:'ok',service:'gutech-lms-api'}));
+app.use('/api',apiRouter);app.use(notFound);app.use(errorHandler);
+app.listen(env.PORT,()=>console.info(`GU Tech LMS API listening on :${env.PORT}`));
