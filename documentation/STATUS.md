@@ -1,21 +1,15 @@
 # Status and verification (honest record)
 
-## Built
-Frontend: login (roll number), forgot/reset password, dashboard, courses + course detail (materials via signed download), weekly timetable, attendance (overall/per-course/history), results, assignments (student submit), notifications (read/unread + deadlines), management console (students, enrollment, courses, timetable, attendance, marks, assignments, announcements; admin and teacher roles). Skeleton loaders, spinners, 15 s request timeout, error states with retry, reduced-motion support.
-Backend: `backend/src/routes/gutech.ts` (+ existing `routes/index.ts`). Database: `database/migrations/001_gutech_academic.sql`.
+## Verified (executed, demo mode: local demo database with SAMPLE data)
+- Builds and strict type-checks (frontend, backend); 6 unit tests; 19 API end-to-end tests; 63 real-browser checks (login to logout, admin workflows, student sees every admin change, persistence after refresh, 3 viewports, console errors); password-reset flow (7 checks); demo restart persistence.
+- Fixed during testing: attendance message cleared after save; attendance sheet race with late-loading data; unreadable next-class card; garbled banner character; Vite BOM; missing vite-env.d.ts.
 
-## Verified
-- Frontend and backend compile (`npm run build`).
-- UI test with a real Edge browser against the built frontend with the **network mocked** (API and Supabase auth intercepted): login validation and error states, successful login, dashboard content, all student routes at 390 / 820 / 1366 px (no horizontal overflow, no console errors), route guards (unauthenticated and student-vs-/manage), API-failure error state, logout. 47/47 checks. This is NOT a test against the real database.
-
-## NOT verified (needs the Supabase project and keys)
-- The migration has never been applied. It was written against `database/schema.sql` (the previous project's baseline), not the live `czvqvnhrlorgeipykrwg` schema, which could not be inspected. Compare before applying.
-- Backend endpoints have not run against a real database: login, dashboard, attendance, RLS behaviour, storage downloads, student creation.
-- Password-reset email delivery (needs SMTP/redirect URL configured in Supabase Auth).
-- No unit tests for server logic (next-class and attendance calculation).
-- Design is built from the written spec, not from the reference screenshots (none were available), and uses a text "GU" fallback until the official logo is added.
-- Not deployed. Portfolio not updated. Nothing pushed to GitHub (no LMS repo specified).
+## NOT verified
+- **Production Supabase (czvqvnhrlorgeipykrwg):** never accessed (connector not signed in, no keys). Migration 001 is unapplied; RLS there is unverified (demo mode emulates, does not prove it). seed-supabase.ts has never been run.
+- **Deployment:** none. Vercel connector works but no project exists; a deploy needs a hosted API and Supabase credentials.
+- **Portfolio:** not changed (see PORTFOLIO_UPDATE.md).
+- Reference screenshots/video and official logo were not available; design follows the written brief.
+- No ESLint; password-reset email delivery untested against real SMTP.
 
 ## Security follow-ups
-- The credentials found in the original `LMS GU TECH` folder (`.env` files and `.env.example`) belong to a different Supabase project and must be rotated there.
-- Create the first admin by inserting a profile role manually (SQL editor); there is no public signup.
+- Credentials found in the original LMS folder (.env files) belong to another Supabase project and must be rotated by their owner (copies exist in the local backup archive D:Portel_backups).
